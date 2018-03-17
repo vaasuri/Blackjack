@@ -22,28 +22,47 @@ public class BlackjackUI
                 System.out.println("Goodbye!");
                 break;
             }
+            
             dealer.deal();
+            
+            ArrayList<Card> userHand = user.getHand();
+            ArrayList<Card> dealerHand = dealer.getHand();
+            displayHand("User", user.getHand());
+            System.out.println("Dealer showing: " + dealerHand.get(0));
+            
             while (getContinueInput(scanner, "Would you like to hit? (Y/N)")) {
-                deck.dealSingleCard();
+                dealer.hit(userHand);
+                displayHand("User", userHand);
+                System.out.println("Dealer: " + dealerHand.get(0));
+                if (Result.handScore(userHand) >= 21)
+                    break;
             }
             
-            
-            displayHand(user.getHand());
+            dealer.dealerHit(dealerHand);
+            displayHand("User", userHand);
+            displayHand("Dealer", dealerHand);
             Result result = dealer.computeResult();
             dealer.updateUserBalance(result);
             displayResult(result);
             
+            // when changing getHand method from clone to returning actual hand, clear() worked
+            // otherwise returning cloned hand kept previous card even after clear()
+            userHand.clear();
+            dealerHand.clear();
         }
         scanner.close();
     }
     
     //changed parameter to ArrayList<Card> hand from Card[] hand
-    private static void displayHand(ArrayList<Card> hand)
+    private static void displayHand(String whichHand, ArrayList<Card> hand)
     {
+        
         int i = 1;
+        System.out.println(whichHand);
         for (Card card : hand) {
             System.out.println(Integer.toString(i++) + ": " + card);
         }
+        System.out.println(whichHand + "score is: " + Result.handScore(hand));
     }
 
     private static void displayBalance(int balance)
@@ -55,40 +74,6 @@ public class BlackjackUI
         System.out.println(msg);
         String line = scanner.nextLine();
         return (line.startsWith("y") || line.startsWith("Y"));
-    }
-    
-    private static int[] selectCardsToReplace(Scanner scanner, String msg, ArrayList<Card> cards) {
-        int[] replacementArray;
-        
-        while (true) {
-            displayHand(cards);
-            System.out.print("Enter card numbers you want to replace seaparated by spaces: ");
-            String input = scanner.nextLine();
-            if (input.isEmpty()) {
-                replacementArray = new int[0];
-                return replacementArray;
-            }
-            String[] replacementInput = input.split(" ");
-            if (replacementInput.length > 5) {
-                System.out.println("Invalid input, try again.");
-                continue;
-            }
-            replacementArray = new int[replacementInput.length];
-            boolean success = true;
-            for (int i = 0; i < replacementInput.length; i++) {
-                int num = Integer.parseInt(replacementInput[i]);
-                if (num < 1 || num > 5) {
-                    success = false;
-                    System.out.println("Invalid input, try again.");
-                    break;
-                }
-                replacementArray[i] = num - 1;
-            }
-            if (success)
-                break;
-        }
-        
-        return replacementArray;
     }
     
     private static void displayResult(Result result) {

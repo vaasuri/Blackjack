@@ -7,7 +7,7 @@ public class Dealer
     private User user;
     private Deck deck;
     private ArrayList<Card> hand;
-    ArrayList<Card> userHand;
+    private ArrayList<Card> userHand;
 
     public Dealer(User user, Deck deck)
     {
@@ -28,6 +28,18 @@ public class Dealer
         user.receiveHand(userHand);
         
     }
+    
+    public void hit(ArrayList<Card> hand) {
+        hand.add(deck.dealSingleCard());
+    }
+    
+    public void dealerHit(ArrayList<Card> hand) {
+        while (Result.handScore(hand) < 17) {
+            hit(hand);
+            if (Result.handScore(hand) >= 17 && Result.handScore(hand) <= 21)
+                break;
+        }  
+    }
 
     public void reDeal(int[] replaceCards)
     {
@@ -44,7 +56,13 @@ public class Dealer
 
     public Result computeResult()
     {
-        return new Result(user.getHand());
+        return new Result(user.getHand(), getHand());
+    }
+    
+    // changing from returning cloned hand to actual hand
+    public ArrayList<Card> getHand()
+    {
+        return hand;
     }
 
 

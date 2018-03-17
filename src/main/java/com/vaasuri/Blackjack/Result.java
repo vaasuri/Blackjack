@@ -55,11 +55,16 @@ public static int[] WINNING_ODDS = {0, 0, 2, 0, 0, 1, 1};
         
     }
     
-    public int handScore(ArrayList<Card> hand) {
+    public static int handScore(ArrayList<Card> hand) {
         
         int handScore = 0;
         for (Card card : hand) {
-            handScore += card.getNumber();
+            if (card.getNumber() == 11 || card.getNumber() == 12 || card.getNumber() == 13)
+                handScore += 10;
+            else if (card.getNumber() == 1 && (handScore + 11) <= 21) // had card.getNumber() before changing to handScore
+                handScore += 11;
+            else
+                handScore += card.getNumber();
         }
         return handScore;
     }
@@ -104,11 +109,15 @@ public static int[] WINNING_ODDS = {0, 0, 2, 0, 0, 1, 1};
     }
     
     public boolean isUserBust() {
-        return isBust(userHand);
+        if (!isBust(dealerHand))
+            return isBust(userHand);
+        return false;
     }
     
     public boolean isDealerBust() {
-        return isBust(dealerHand);
+        if (!isBust(userHand))
+            return isBust(dealerHand);
+        return false;
     }
     
     public boolean isRegularWin() {

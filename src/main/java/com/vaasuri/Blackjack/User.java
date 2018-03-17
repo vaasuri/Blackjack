@@ -21,9 +21,10 @@ public class User
         return balance;
     }
 
+    // changing from returning cloned hand to actual hand
     public ArrayList<Card> getHand()
     {
-        return (ArrayList<Card>) hand.clone();
+        return hand;
     }
     
     public void replaceCardOnHand(int index, Card newCard) {
